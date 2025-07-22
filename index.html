@@ -5,120 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="description" content="P2P (A Pahadi to Pahadi Messenger) - Decentralized, secure messaging app">
     <meta name="theme-color" content="#121212">
-    <title>P2P Messenger - Decentralized Chat</title>
+    <title>P2P Messenger - Functional</title>
 
-    <!-- 1. MANIFEST EMBEDDED AS A DATA URL -->
     <link rel="manifest" href="data:application/manifest+json,{"name":"P2P (A Pahadi to Pahadi Messenger)","short_name":"P2P Chat","description":"Decentralized peer-to-peer messaging","start_url":".","display":"standalone","background_color":"#121212","theme_color":"#121212","icons":[{"src":"https://via.placeholder.com/192","sizes":"192x192","type":"image/png"},{"src":"https://via.placeholder.com/512","sizes":"512x512","type":"image/png"}]}">
-
-    <!-- External libraries are kept for simplicity and size -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.js"></script>
 
-    <!-- 2. CSS EMBEDDED DIRECTLY -->
     <style>
-        :root {
-            --primary-color: #00bcd4; --secondary-color: #212121; --light-gray: #f5f5f5;
-            --dark-gray: #333; --white: #ffffff; --black: #000000; --text-light: var(--black);
-            --text-dark: var(--light-gray); --bg-light: var(--white); --bg-dark: var(--secondary-color);
-            --card-light: var(--light-gray); --card-dark: #2a2a2a; --border-light: #e0e0e0;
-            --border-dark: var(--dark-gray); --success: #4caf50; --warning: #ff9800;
-            --online: #4caf50; --offline: #f44336; --primary: var(--primary-color);
-            --primary-light: #4dd0e1;
-        }
-        [data-theme="light"] {
-            --text: var(--text-light); --bg: var(--bg-light); --card: var(--card-light);
-            --border: var(--border-light); --shadow: rgba(0, 0, 0, 0.08);
-            --header-bg: var(--primary-color); --header-text: var(--white);
-        }
-        [data-theme="dark"] {
-            --text: var(--text-dark); --bg: var(--bg-dark); --card: var(--card-dark);
-            --border: var(--border-dark); --shadow: rgba(0, 0, 0, 0.3);
-            --header-bg: #1a1a1a; --header-text: var(--primary-color);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
-        body { font-family: 'Roboto', 'Helvetica', sans-serif; background-color: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; line-height: 1.5; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-        .app-container { display: flex; flex-direction: column; height: 100%; max-width: 100%; }
-        header { background-color: var(--header-bg); color: var(--header-text); padding: 0.8rem 1.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px var(--shadow); z-index: 10; border-bottom: 1px solid var(--border); position: sticky; top: 0; }
-        .logo { display: flex; align-items: center; gap: 0.5rem; font-weight: bold; font-size: 1.4rem; letter-spacing: -0.5px; }
-        .logo-video { width: 48px; height: 48px; border-radius: 50%; }
-        .header-actions { display: flex; gap: 0.8rem; }
-        .btn-icon { background: none; border: none; color: var(--header-text); font-size: 1.2rem; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .btn-icon:hover { background-color: rgba(255, 255, 255, 0.1); }
-        .view { flex: 1; overflow-y: auto; display: none; padding: 0; width: 100%; }
-        .view.active { display: flex; flex-direction: column; }
-        .onboarding { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 2rem; text-align: center; max-width: 900px; margin: 0 auto; width: 100%; }
-        .onboarding h2 { margin-bottom: 1.5rem; font-size: clamp(1.8rem, 4vw, 2.2rem); font-weight: 700; max-width: 700px; }
-        .onboarding p { margin-bottom: 2.5rem; max-width: 600px; line-height: 1.6; font-size: clamp(1rem, 2.5vw, 1.1rem); opacity: 0.9; }
-        .action-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; margin-top: 1rem; max-width: 900px; width: 100%; }
-        .action-card { background-color: var(--card); border-radius: 3px; padding: 2rem 1.5rem; flex: 1 1 280px; max-width: 400px; min-width: 250px; box-shadow: 0 2px 5px var(--shadow); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.3s ease; text-align: center; position: relative; overflow: hidden; }
-        .action-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-color: var(--primary); }
-        .action-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background-color: var(--primary); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
-        .action-card:hover::before { transform: scaleX(1); }
-        .action-icon { font-size: clamp(2.2rem, 8vw, 2.8rem); margin-bottom: 1.5rem; color: var(--primary); transition: color 0.3s; }
-        .action-card:hover .action-icon { color: var(--primary-light); }
-        .action-card h3 { margin-bottom: 0.8rem; font-size: clamp(1.1rem, 3vw, 1.3rem); font-weight: 700; }
-        .action-card p { font-size: clamp(0.85rem, 2.5vw, 0.95rem); margin-bottom: 0; opacity: 0.8; }
-        .qr-container, .scanner-container { display: flex; flex-direction: column; align-items: center; padding: 2.5rem 1rem; max-width: 600px; margin: 0 auto; width: 100%; height: 100%; justify-content: center; }
-        .qr-container h2, .scanner-container h2 { margin-bottom: 1rem; font-size: clamp(1.5rem, 4vw, 1.8rem); text-align: center; }
-        .qr-container p, .scanner-container p { margin-bottom: 1.5rem; text-align: center; max-width: 500px; opacity: 0.9; font-size: clamp(0.9rem, 2.5vw, 1rem); }
-        #qr-code-container { margin: 1.5rem 0; padding: 1.2rem; background: var(--white); border-radius: 3px; box-shadow: 0 2px 5px var(--shadow); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; max-width: 300px; }
-        .peer-id-display { background-color: var(--card); padding: 1rem; border-radius: 3px; margin: 1rem 0; font-family: monospace; word-break: break-all; text-align: center; border: 1px solid var(--border); max-width: 100%; overflow: hidden; font-size: clamp(0.8rem, 3vw, 0.9rem); width: 100%; max-width: 500px; }
-        .connection-status { margin-top: 1.2rem; padding: 0.6rem 1.2rem; border-radius: 3px; font-weight: bold; display: inline-flex; align-items: center; gap: 0.5rem; background-color: var(--card); border: 1px solid var(--border); font-size: clamp(0.9rem, 2.5vw, 1rem); }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-        .status-online .status-dot { background-color: var(--online); }
-        .status-connecting .status-dot { background-color: var(--warning); animation: pulse 1.5s infinite; }
-        .status-offline .status-dot { background-color: var(--offline); }
-        .chat-container { display: flex; flex-direction: column; height: 100%; background-color: var(--bg); }
-        .chat-header { display: flex; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background-color: var(--card); position: sticky; top: 0; z-index: 5; }
-        .avatar { width: 42px; height: 42px; border-radius: 50%; background-color: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 1rem; flex-shrink: 0; background-size: cover; background-position: center; }
-        .peer-info { flex: 1; min-width: 0; }
-        .peer-name { font-weight: bold; font-size: clamp(1rem, 3vw, 1.1rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .peer-status { font-size: clamp(0.8rem, 2.5vw, 0.85rem); opacity: 0.7; }
-        .peer-status.status-online { color: var(--online); }
-        .messages { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; -webkit-overflow-scrolling: touch; }
-        .message { max-width: 85%; padding: 1rem 1.2rem; border-radius: 18px; position: relative; animation: fadeIn 0.3s; }
-        .message-sent { align-self: flex-end; background-color: var(--primary); color: white; border-bottom-right-radius: 4px; }
-        .message-received { align-self: flex-start; background-color: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
-        .message-content { word-wrap: break-word; font-size: clamp(0.9rem, 2.5vw, 1rem); line-height: 1.4; }
-        .message-time { font-size: 0.75rem; text-align: right; margin-top: 0.4rem; opacity: 0.7; }
-        .message-input-area { display: flex; padding: 1.2rem; border-top: 1px solid var(--border); background-color: var(--card); position: sticky; bottom: 0; }
-        .message-input { flex: 1; padding: 0.9rem 1.2rem; border-radius: 24px; border: 1px solid var(--border); background-color: var(--bg); color: var(--text); outline: none; font-size: 1rem; }
-        .message-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,188,212,0.1); }
-        .send-button { margin-left: 0.8rem; background-color: var(--primary); color: white; border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color 0.2s; flex-shrink: 0; }
-        .send-button:hover:not(:disabled) { background-color: var(--primary-light); }
-        .send-button:disabled { background-color: var(--border); cursor: not-allowed; }
-        .scanner-viewport { width: 100%; max-width: min(400px, 90vw); aspect-ratio: 1; border: 2px solid var(--border); border-radius: 3px; overflow: hidden; position: relative; margin: 1.5rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        #scanner-video { width: 100%; height: 100%; object-fit: cover; }
-        .scanner-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-        .scanner-frame { width: 70%; height: 70%; border: 3px solid var(--primary); border-radius: 8px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5); }
-        .identity-setup { padding: 2rem 1.5rem; max-width: 600px; margin: 0 auto; width: 100%; }
-        .identity-setup h2 { margin-bottom: 0.5rem; font-size: clamp(1.5rem, 4vw, 1.8rem); }
-        .identity-setup p { margin-bottom: 2rem; opacity: 0.9; font-size: clamp(0.9rem, 2.5vw, 1rem); }
-        .form-group { margin-bottom: 1.8rem; }
-        .form-group label { display: block; margin-bottom: 0.6rem; font-weight: 500; font-size: clamp(0.9rem, 2.5vw, 1rem); }
-        .form-control { width: 100%; padding: 0.9rem; border-radius: 3px; border: 1px solid var(--border); background-color: var(--bg); color: var(--text); font-size: 1rem; }
-        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,188,212,0.1); outline: none; }
-        .btn { padding: 0.9rem 1.8rem; border-radius: 3px; border: none; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; transition: all 0.2s; font-size: 1rem; }
-        .btn-primary { background-color: var(--primary); color: white; }
-        .btn-primary:hover { background-color: var(--primary-light); }
-        .btn-secondary { background-color: transparent; border: 1px solid var(--border); }
-        .btn-secondary:hover { background-color: var(--card); border-color: var(--primary); color: var(--primary); }
-        .notification { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); padding: 1rem 1.8rem; border-radius: 3px; background-color: var(--card); color: var(--text); box-shadow: 0 4px 12px var(--shadow); border: 1px solid var(--border); display: flex; align-items: center; gap: 0.8rem; z-index: 100; animation: slideUp 0.3s; max-width: 90%; font-size: clamp(0.9rem, 2.5vw, 1rem); }
-        .avatar-option { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; transition: all 0.2s; border: 2px solid transparent; flex-shrink: 0; }
-        .avatar-option:hover { transform: scale(1.1); }
-        .avatar-option.selected { border-color: var(--primary); transform: scale(1.1); }
-        .avatar-preview { width: 80px; height: 80px; border-radius: 50%; background-color: var(--card); background-size: cover; background-position: center; margin: 0 auto 1rem; border: 2px solid var(--border); }
-        .hidden { display: none; }
-        footer { text-align: center; padding: 1rem; background-color: var(--header-bg); color: var(--header-text); font-size: clamp(0.8rem, 2.5vw, 0.9rem); border-top: 1px solid var(--border); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        @media (max-width: 480px) { .logo span { display: none; } }
+        :root{--primary-color:#00bcd4;--secondary-color:#212121;--light-gray:#f5f5f5;--dark-gray:#333;--white:#fff;--black:#000;--text-light:var(--black);--text-dark:var(--light-gray);--bg-light:var(--white);--bg-dark:var(--secondary-color);--card-light:var(--light-gray);--card-dark:#2a2a2a;--border-light:#e0e0e0;--border-dark:var(--dark-gray);--success:#4caf50;--warning:#ff9800;--online:#4caf50;--offline:#f44336;--primary:var(--primary-color);--primary-light:#4dd0e1}[data-theme=light]{--text:var(--text-light);--bg:var(--bg-light);--card:var(--card-light);--border:var(--border-light);--shadow:rgba(0,0,0,.08);--header-bg:var(--primary-color);--header-text:var(--white)}[data-theme=dark]{--text:var(--text-dark);--bg:var(--bg-dark);--card:var(--card-dark);--border:var(--border-dark);--shadow:rgba(0,0,0,.3);--header-bg:#1a1a1a;--header-text:var(--primary-color)}*{margin:0;padding:0;box-sizing:border-box;transition:background-color .3s,color .3s,border-color .3s}body{font-family:'Roboto','Helvetica',sans-serif;background-color:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;line-height:1.5;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.app-container{display:flex;flex-direction:column;height:100%;max-width:100%}header{background-color:var(--header-bg);color:var(--header-text);padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 5px var(--shadow);z-index:10;border-bottom:1px solid var(--border);position:sticky;top:0}.logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:1.4rem;letter-spacing:-.5px}.logo-video{width:48px;height:48px;border-radius:50%}.header-actions{display:flex;gap:.8rem}.btn-icon{background:0 0;border:none;color:var(--header-text);font-size:1.2rem;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center}.btn-icon:hover{background-color:rgba(255,255,255,.1)}.view{flex:1;overflow-y:auto;display:none;padding:0;width:100%}.view.active{display:flex;flex-direction:column}.onboarding{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:2rem;text-align:center;max-width:900px;margin:0 auto;width:100%}.onboarding h2{margin-bottom:1.5rem;font-size:clamp(1.8rem,4vw,2.2rem);font-weight:700;max-width:700px}.onboarding p{margin-bottom:2.5rem;max-width:600px;line-height:1.6;font-size:clamp(1rem,2.5vw,1.1rem);opacity:.9}.action-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:2rem;margin-top:1rem;max-width:900px;width:100%}.action-card{background-color:var(--card);border-radius:3px;padding:2rem 1.5rem;flex:1 1 280px;max-width:400px;min-width:250px;box-shadow:0 2px 5px var(--shadow);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:all .3s ease;text-align:center;position:relative;overflow:hidden}.action-card:hover{transform:translateY(-5px);box-shadow:0 5px 15px rgba(0,0,0,.1);border-color:var(--primary)}.action-card:before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background-color:var(--primary);transform:scaleX(0);transform-origin:left;transition:transform .3s ease}.action-card:hover:before{transform:scaleX(1)}.action-icon{font-size:clamp(2.2rem,8vw,2.8rem);margin-bottom:1.5rem;color:var(--primary);transition:color .3s}.action-card:hover .action-icon{color:var(--primary-light)}.action-card h3{margin-bottom:.8rem;font-size:clamp(1.1rem,3vw,1.3rem);font-weight:700}.action-card p{font-size:clamp(.85rem,2.5vw,.95rem);margin-bottom:0;opacity:.8}.qr-container,.scanner-container{display:flex;flex-direction:column;align-items:center;padding:2.5rem 1rem;max-width:600px;margin:0 auto;width:100%;height:100%;justify-content:center}.qr-container h2,.scanner-container h2{margin-bottom:1rem;font-size:clamp(1.5rem,4vw,1.8rem);text-align:center}.qr-container p,.scanner-container p{margin-bottom:1.5rem;text-align:center;max-width:500px;opacity:.9;font-size:clamp(.9rem,2.5vw,1rem)}#qr-code-container{margin:1.5rem 0;padding:1.2rem;background:var(--white);border-radius:3px;box-shadow:0 2px 5px var(--shadow);border:1px solid var(--border);display:flex;justify-content:center;align-items:center;max-width:300px}.peer-id-display{background-color:var(--card);padding:1rem;border-radius:3px;margin:1rem 0;font-family:monospace;word-break:break-all;text-align:center;border:1px solid var(--border);max-width:100%;overflow:auto;font-size:clamp(.8rem,3vw,.9rem);width:100%;max-width:500px}.connection-status{margin-top:1.2rem;padding:.6rem 1.2rem;border-radius:3px;font-weight:700;display:inline-flex;align-items:center;gap:.5rem;background-color:var(--card);border:1px solid var(--border);font-size:clamp(.9rem,2.5vw,1rem)}.status-dot{width:10px;height:10px;border-radius:50%;display:inline-block}.status-online .status-dot{background-color:var(--online)}.status-connecting .status-dot{background-color:var(--warning);animation:pulse 1.5s infinite}.status-offline .status-dot{background-color:var(--offline)}.chat-container{display:flex;flex-direction:column;height:100%;background-color:var(--bg)}.chat-header{display:flex;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background-color:var(--card);position:sticky;top:0;z-index:5}.avatar{width:42px;height:42px;border-radius:50%;background-color:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;margin-right:1rem;flex-shrink:0;background-size:cover;background-position:center}.peer-info{flex:1;min-width:0}.peer-name{font-weight:700;font-size:clamp(1rem,3vw,1.1rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.peer-status{font-size:clamp(.8rem,2.5vw,.85rem);opacity:.7}.peer-status.status-online{color:var(--online)}.messages{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1.2rem;-webkit-overflow-scrolling:touch}.message{max-width:85%;padding:1rem 1.2rem;border-radius:18px;position:relative;animation:fadeIn .3s}.message-sent{align-self:flex-end;background-color:var(--primary);color:#fff;border-bottom-right-radius:4px}.message-received{align-self:flex-start;background-color:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px}.message-content{word-wrap:break-word;font-size:clamp(.9rem,2.5vw,1rem);line-height:1.4}.message-time{font-size:.75rem;text-align:right;margin-top:.4rem;opacity:.7}.message-input-area{display:flex;padding:1.2rem;border-top:1px solid var(--border);background-color:var(--card);position:sticky;bottom:0}.message-input{flex:1;padding:.9rem 1.2rem;border-radius:24px;border:1px solid var(--border);background-color:var(--bg);color:var(--text);outline:0;font-size:1rem}.message-input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(0,188,212,.1)}.send-button{margin-left:.8rem;background-color:var(--primary);color:#fff;border:none;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background-color .2s;flex-shrink:0}.send-button:hover:not(:disabled){background-color:var(--primary-light)}.send-button:disabled{background-color:var(--border);cursor:not-allowed}.scanner-viewport{width:100%;max-width:min(400px,90vw);aspect-ratio:1;border:2px solid var(--border);border-radius:3px;overflow:hidden;position:relative;margin:1.5rem 0;box-shadow:0 2px 10px rgba(0,0,0,.1)}#scanner-video{width:100%;height:100%;object-fit:cover}.scanner-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center}.scanner-frame{width:70%;height:70%;border:3px solid var(--primary);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.5)}.identity-setup{padding:2rem 1.5rem;max-width:600px;margin:0 auto;width:100%}.identity-setup h2{margin-bottom:.5rem;font-size:clamp(1.5rem,4vw,1.8rem)}.identity-setup p{margin-bottom:2rem;opacity:.9;font-size:clamp(.9rem,2.5vw,1rem)}.form-group{margin-bottom:1.8rem}.form-group label{display:block;margin-bottom:.6rem;font-weight:500;font-size:clamp(.9rem,2.5vw,1rem)}.form-control{width:100%;padding:.9rem;border-radius:3px;border:1px solid var(--border);background-color:var(--bg);color:var(--text);font-size:1rem}.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(0,188,212,.1);outline:0}.btn{padding:.9rem 1.8rem;border-radius:3px;border:none;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;transition:all .2s;font-size:1rem}.btn-primary{background-color:var(--primary);color:#fff}.btn-primary:hover{background-color:var(--primary-light)}.btn-secondary{background-color:transparent;border:1px solid var(--border)}.btn-secondary:hover{background-color:var(--card);border-color:var(--primary);color:var(--primary)}.notification{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);padding:1rem 1.8rem;border-radius:3px;background-color:var(--card);color:var(--text);box-shadow:0 4px 12px var(--shadow);border:1px solid var(--border);display:flex;align-items:center;gap:.8rem;z-index:100;animation:slideUp .3s;max-width:90%;font-size:clamp(.9rem,2.5vw,1rem)}.avatar-preview{width:80px;height:80px;border-radius:50%;background-color:var(--card);background-size:cover;background-position:center;margin:0 auto 1rem;border:2px solid var(--border)}.hidden{display:none}footer{text-align:center;padding:1rem;background-color:var(--header-bg);color:var(--header-text);font-size:clamp(.8rem,2.5vw,.9rem);border-top:1px solid var(--border)}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes slideUp{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}@keyframes pulse{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}@media (max-width:480px){.logo span{display:none}}
     </style>
 </head>
-<body data-theme="dark">
-    <!-- 3. HTML BODY STRUCTURE -->
+<body>
     <div class="app-container">
         <header>
             <div class="logo">
@@ -132,121 +30,35 @@
         </header>
 
         <main style="flex: 1; overflow-y: hidden; display: flex;">
-            <div id="onboarding-view" class="view active">
-                <div class="onboarding">
-                    <h2>P2P (A Pahadi to Pahadi Messenger)</h2>
-                    <p>Connect directly with other users without central servers. Your messages are end-to-end encrypted and never stored on any server.</p>
-                    <div class="action-cards">
-                        <div class="action-card" id="create-link-card"><div class="action-icon">🔗</div><h3>Show QR Code</h3><p>Display your code for others to scan</p></div>
-                        <div class="action-card" id="scan-qr-card"><div class="action-icon">📷</div><h3>Scan QR Code</h3><p>Connect by scanning another user's code</p></div>
-                        <div class="action-card" id="manual-connect-card"><div class="action-icon">💬</div><h3>Manual Connect</h3><p>Connect with a peer using their ID</p></div>
-                    </div>
-                </div>
-            </div>
-            <div id="qr-view" class="view"><div class="qr-container"><h2>Your Connection Code</h2><p>Have your friend scan this code to connect</p><div id="qr-code-container"></div><div class="peer-id-display" id="my-peer-id-display">Loading...</div><div class="connection-status" id="connection-status"><span class="status-dot"></span><span id="connection-status-text">Offline</span></div><button class="btn btn-secondary" id="back-to-onboarding-btn">← Back</button></div></div>
+            <div id="onboarding-view" class="view active"><div class="onboarding"><h2>P2P (A Pahadi to Pahadi Messenger)</h2><p>Connect directly with other users without central servers. Your messages are end-to-end encrypted and never stored on any server.</p><div class="action-cards"><div class="action-card" id="create-link-card"><div class="action-icon">🔗</div><h3>Show QR Code</h3><p>Display your code for others to scan</p></div><div class="action-card" id="scan-qr-card"><div class="action-icon">📷</div><h3>Scan QR Code</h3><p>Connect by scanning another user's code</p></div><div class="action-card" id="manual-connect-card"><div class="action-icon">💬</div><h3>Manual Connect</h3><p>Connect with a peer using their ID</p></div></div></div></div>
+            <div id="qr-view" class="view"><div class="qr-container"><h2>Your Connection Code</h2><p>Have your friend scan this code to connect</p><div id="qr-code-container"></div><div class="peer-id-display" id="my-peer-id-display">Loading...</div><button class="btn" id="copy-id-btn" title="Copy Peer ID">Copy ID</button><div class="connection-status" id="connection-status"><span class="status-dot"></span><span id="connection-status-text">Offline</span></div><button class="btn btn-secondary" id="back-to-onboarding-btn">← Back</button></div></div>
             <div id="scanner-view" class="view"><div class="scanner-container"><h2>Scan QR Code</h2><p>Point your camera at a friend's QR code</p><div class="scanner-viewport"><video id="scanner-video" playsinline></video><div class="scanner-overlay"><div class="scanner-frame"></div></div></div><button class="btn btn-secondary" id="cancel-scan-btn">Cancel</button></div></div>
             <div id="chat-view" class="view"><div class="chat-container"><div class="chat-header"><div class="avatar" id="peer-avatar">P</div><div class="peer-info"><div class="peer-name" id="peer-name">Peer Name</div><div class="peer-status status-online" id="peer-status">Online</div></div></div><div class="messages" id="messages-container"></div><form class="message-input-area" id="message-form"><input type="text" class="message-input" id="message-input" placeholder="Type a message..." autocomplete="off"><button type="submit" class="send-button" id="send-btn" disabled>➤</button></form></div></div>
             <div id="identity-view" class="view"><div class="identity-setup"><h2>Your Identity</h2><p>This information is shared when you connect</p><div class="form-group"><label>Your Peer ID (read-only)</label><div class="peer-id-display" id="identity-peer-id">Loading...</div></div><div class="form-group"><label for="avatar-upload">Profile Photo</label><div class="avatar-preview" id="avatar-preview"></div><input type="file" id="avatar-upload" class="form-control" accept="image/*"></div><div class="form-group"><label for="nickname">Nickname</label><input type="text" class="form-control" id="nickname" placeholder="Enter a nickname"></div><div style="display: flex; gap: 1rem; margin-top: 2rem;"><button class="btn btn-secondary" id="identity-back-btn">← Back</button><button class="btn btn-primary" id="save-identity-btn">Save Identity</button></div></div></div>
         </main>
-        
-        <footer class="hidden">
-            <p>© 2025 P2P Messenger | Created by Samar Jeet Jamwal</p>
-        </footer>
     </div>
 
-    <!-- 4. ALL JAVASCRIPT LOGIC EMBEDDED -->
     <script>
-    // --- SINGLE FILE EMBEDDING NOTES ---
-    // The following script contains all application logic.
-    // The Service Worker is defined as a string and registered via a Blob URL
-    // to keep everything within this single HTML file.
-
-    // --- 4a. SERVICE WORKER CODE (AS A STRING) ---
     const swCode = `
         const CACHE_NAME = 'p2p-messenger-cache-v1';
-        // Note: We don't cache the HTML file itself here, as it's the container.
-        // Caching external resources is the main goal for the single-file version.
         const urlsToCache = [
             'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js',
             'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js',
             'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.js',
             'https://storage.googleapis.com/gweb-cloud-media-autogen-public/images/p2p-logo.mp4'
         ];
-
-        self.addEventListener('install', event => {
-            event.waitUntil(
-                caches.open(CACHE_NAME)
-                    .then(cache => {
-                        console.log('Opened cache');
-                        return cache.addAll(urlsToCache);
-                    })
-            );
-        });
-
-        self.addEventListener('fetch', event => {
-            event.respondWith(
-                caches.match(event.request)
-                    .then(response => {
-                        return response || fetch(event.request);
-                    })
-            );
-        });
-
-        self.addEventListener('activate', event => {
-            const cacheWhitelist = [CACHE_NAME];
-            event.waitUntil(
-                caches.keys().then(cacheNames => {
-                    return Promise.all(
-                        cacheNames.map(cacheName => {
-                            if (cacheWhitelist.indexOf(cacheName) === -1) {
-                                return caches.delete(cacheName);
-                            }
-                        })
-                    );
-                })
-            );
-        });
+        self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(urlsToCache)))});
+        self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});
     `;
 
-    // --- 4b. MAIN APPLICATION LOGIC ---
     document.addEventListener('DOMContentLoaded', () => {
-        // --- DATABASE HELPER ---
         const db = {
             _db: null,
-            init() {
-                return new Promise((resolve, reject) => {
-                    const request = indexedDB.open('P2P_Messenger_DB', 1);
-                    request.onupgradeneeded = event => {
-                        const db = event.target.result;
-                        if (!db.objectStoreNames.contains('userProfile')) {
-                            db.createObjectStore('userProfile', { keyPath: 'id' });
-                        }
-                    };
-                    request.onsuccess = event => { this._db = event.target.result; resolve(); };
-                    request.onerror = event => reject(event.target.error);
-                });
-            },
-            async set(storeName, value) {
-                if (!this._db) await this.init();
-                return new Promise((resolve, reject) => {
-                    const transaction = this._db.transaction(storeName, 'readwrite');
-                    const request = transaction.objectStore(storeName).put(value);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            },
-            async get(storeName, key) {
-                if (!this._db) await this.init();
-                return new Promise((resolve, reject) => {
-                    const transaction = this._db.transaction(storeName, 'readonly');
-                    const request = transaction.objectStore(storeName).get(key);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
+            init() { return new Promise((resolve, reject) => { const request = indexedDB.open('P2P_Messenger_DB', 1); request.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains('userProfile')) { db.createObjectStore('userProfile', { keyPath: 'id' }); } }; request.onsuccess = e => { this._db = e.target.result; resolve(); }; request.onerror = e => reject(e.target.error); }); },
+            async set(storeName, value) { if (!this._db) await this.init(); return new Promise((resolve, reject) => { const transaction = this._db.transaction(storeName, 'readwrite'); const request = transaction.objectStore(storeName).put(value); request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); }); },
+            async get(storeName, key) { if (!this._db) await this.init(); return new Promise((resolve, reject) => { const transaction = this._db.transaction(storeName, 'readonly'); const request = transaction.objectStore(storeName).get(key); request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); }); }
         };
 
-        // --- APP STATE AND ELEMENTS ---
         const appState = { peer: null, peerId: null, dataConnection: null, nickname: 'Pahadi User', avatarImage: null, theme: 'dark', currentView: 'onboarding', previousView: 'onboarding', isCameraRunning: false };
         const elements = {
             views: { onboarding: document.getElementById('onboarding-view'), qr: document.getElementById('qr-view'), scanner: document.getElementById('scanner-view'), chat: document.getElementById('chat-view'), identity: document.getElementById('identity-view') },
@@ -254,96 +66,51 @@
             connectionStatusText: document.getElementById('connection-status-text'), scannerVideo: document.getElementById('scanner-video'), messagesContainer: document.getElementById('messages-container'), messageForm: document.getElementById('message-form'),
             messageInput: document.getElementById('message-input'), sendButton: document.getElementById('send-btn'), peerAvatar: document.getElementById('peer-avatar'), peerName: document.getElementById('peer-name'), peerStatus: document.getElementById('peer-status'),
             identityPeerId: document.getElementById('identity-peer-id'), nicknameInput: document.getElementById('nickname'), avatarUpload: document.getElementById('avatar-upload'), avatarPreview: document.getElementById('avatar-preview'), themeToggle: document.getElementById('theme-toggle'),
+            copyIdBtn: document.getElementById('copy-id-btn')
         };
 
-        // --- CORE FUNCTIONS ---
         function initApp() { setupEventListeners(); loadIdentity(); initPeerJS(); registerServiceWorker(); }
-        async function loadIdentity() {
-            const identity = await db.get('userProfile', 'myIdentity') || {};
-            appState.nickname = identity.nickname || 'Pahadi User';
-            appState.avatarImage = identity.avatarImage || null;
-            appState.theme = localStorage.getItem('p2pTheme') || 'dark';
-            updateUI();
-        }
-        async function saveIdentity() {
-            appState.nickname = elements.nicknameInput.value;
-            await db.set('userProfile', { id: 'myIdentity', nickname: appState.nickname, avatarImage: appState.avatarImage });
-            localStorage.setItem('p2pTheme', appState.theme);
-            showNotification('Identity saved!');
-            updateUI();
-            showView(appState.previousView);
-        }
-        function updateUI() {
-            document.body.dataset.theme = appState.theme;
-            elements.themeToggle.textContent = appState.theme === 'light' ? '☀️' : '🌙';
-            elements.nicknameInput.value = appState.nickname;
-            elements.headerNickname.textContent = appState.nickname;
-            if (appState.avatarImage) {
-                elements.avatarPreview.style.backgroundImage = `url(${appState.avatarImage})`;
-                elements.avatarPreview.textContent = '';
-            } else {
-                elements.avatarPreview.style.backgroundImage = 'none';
-                elements.avatarPreview.textContent = appState.nickname.charAt(0).toUpperCase();
-            }
-        }
+        async function loadIdentity() { const identity = await db.get('userProfile', 'myIdentity') || {}; appState.nickname = identity.nickname || 'Pahadi User'; appState.avatarImage = identity.avatarImage || null; appState.theme = localStorage.getItem('p2pTheme') || 'dark'; updateUI(); }
+        async function saveIdentity() { appState.nickname = elements.nicknameInput.value; await db.set('userProfile', { id: 'myIdentity', nickname: appState.nickname, avatarImage: appState.avatarImage }); localStorage.setItem('p2pTheme', appState.theme); showNotification('Identity saved!'); updateUI(); showView(appState.previousView); }
+        function updateUI() { document.body.dataset.theme = appState.theme; elements.themeToggle.textContent = appState.theme === 'light' ? '☀️' : '🌙'; elements.nicknameInput.value = appState.nickname; elements.headerNickname.textContent = appState.nickname; if (appState.avatarImage) { elements.avatarPreview.style.backgroundImage = `url(${appState.avatarImage})`; elements.avatarPreview.textContent = ''; } else { elements.avatarPreview.style.backgroundImage = 'none'; elements.avatarPreview.textContent = appState.nickname.charAt(0).toUpperCase(); } }
+        
         function initPeerJS() {
-            appState.peer = new Peer({ host: 'peerjs.92k.de', path: '/', port: 443, secure: true });
+            // ROBUST CHANGE: Added Google's public STUN and a public TURN server for better connectivity.
+            const peerJsConfig = {
+                config: {
+                    'iceServers': [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        {
+                            urls: "turn:openrelay.metered.ca:80",
+                            username: "openrelayproject",
+                            credential: "openrelayproject",
+                        },
+                    ]
+                }
+            };
+            appState.peer = new Peer(peerJsConfig);
             appState.peer.on('open', id => { appState.peerId = id; elements.myPeerIdDisplay.textContent = id; elements.identityPeerId.textContent = id; setConnectionStatus('online'); generateQRCode(); });
             appState.peer.on('connection', conn => setupDataConnection(conn));
             appState.peer.on('error', err => { console.error('PeerJS error:', err); setConnectionStatus('error', `Error: ${err.type}`); });
         }
+
         function setupDataConnection(conn) {
             appState.dataConnection = conn;
             elements.messagesContainer.innerHTML = '';
+            setConnectionStatus('connecting', `Handshake with ${conn.peer}...`);
             conn.on('open', () => { conn.send({ type: 'identity', nickname: appState.nickname, avatarImage: appState.avatarImage }); setConnectionStatus('connected'); showView('chat'); });
             conn.on('data', data => { if (data.type === 'identity') updatePeerInfo(data); else if (data.type === 'message') addMessage(data.text, 'received', data.timestamp); });
             conn.on('close', () => { showNotification(`${conn.metadata?.nickname || 'Peer'} has disconnected.`); setConnectionStatus('online'); showView('onboarding'); });
+            conn.on('error', err => { console.error('Connection error:', err); showNotification('Connection lost.', 'error'); setConnectionStatus('error'); showView('onboarding'); });
         }
-        function connectToPeer(peerId) { if (!peerId || peerId === appState.peerId) { showNotification("Invalid Peer ID."); return; } setupDataConnection(appState.peer.connect(peerId, { metadata: { nickname: appState.nickname } })); }
-        function updatePeerInfo(peerIdentity) {
-            elements.peerName.textContent = peerIdentity.nickname;
-            if (peerIdentity.avatarImage) {
-                elements.peerAvatar.style.backgroundImage = `url(${peerIdentity.avatarImage})`;
-                elements.peerAvatar.textContent = '';
-            } else {
-                elements.peerAvatar.style.backgroundImage = 'none';
-                elements.peerAvatar.style.backgroundColor = '#0097a7';
-                elements.peerAvatar.textContent = peerIdentity.nickname.charAt(0).toUpperCase();
-            }
-        }
-        function setConnectionStatus(status, text) {
-            elements.connectionStatus.className = 'connection-status';
-            const statusMap = { 'online': 'status-online', 'connecting': 'status-connecting', 'connected': 'status-online', 'error': 'status-offline' };
-            const textMap = { 'online': 'Online & Ready', 'connecting': 'Connecting...', 'connected': 'Connected', 'error': 'Connection Error', 'offline': 'Offline' };
-            elements.connectionStatus.classList.add(statusMap[status] || 'status-offline');
-            elements.connectionStatusText.textContent = text || textMap[status];
-        }
-        function addMessage(text, type, timestamp) {
-            const messageEl = document.createElement('div');
-            messageEl.className = `message message-${type}`;
-            const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            messageEl.innerHTML = `<div class="message-content">${text}</div><div class="message-time">${time}</div>`;
-            elements.messagesContainer.appendChild(messageEl);
-            elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
-        }
-        function sendMessage(e) {
-            e.preventDefault();
-            const text = elements.messageInput.value.trim();
-            if (text && appState.dataConnection) {
-                const message = { type: 'message', text, timestamp: new Date().toISOString() };
-                appState.dataConnection.send(message);
-                addMessage(text, 'sent', message.timestamp);
-                elements.messageForm.reset();
-            }
-        }
+        function connectToPeer(peerId) { if (!peerId || peerId === appState.peerId) { showNotification("Invalid Peer ID."); return; } showNotification(`Attempting to connect to ${peerId}...`); setConnectionStatus('connecting'); setupDataConnection(appState.peer.connect(peerId, { reliable: true, metadata: { nickname: appState.nickname } })); }
+        function updatePeerInfo(peerIdentity) { elements.peerName.textContent = peerIdentity.nickname; if (peerIdentity.avatarImage) { elements.peerAvatar.style.backgroundImage = `url(${peerIdentity.avatarImage})`; elements.peerAvatar.textContent = ''; } else { elements.peerAvatar.style.backgroundImage = 'none'; elements.peerAvatar.style.backgroundColor = '#0097a7'; elements.peerAvatar.textContent = peerIdentity.nickname.charAt(0).toUpperCase(); } }
+        function setConnectionStatus(status, text) { elements.connectionStatus.className = 'connection-status'; const statusMap = { 'online': 'status-online', 'connecting': 'status-connecting', 'connected': 'status-online', 'error': 'status-offline' }; const textMap = { 'online': 'Online & Ready', 'connecting': 'Connecting...', 'connected': 'Connected', 'error': 'Connection Error', 'offline': 'Offline' }; elements.connectionStatus.classList.add(statusMap[status] || 'status-offline'); elements.connectionStatusText.textContent = text || textMap[status]; }
+        function addMessage(text, type, timestamp) { const messageEl = document.createElement('div'); messageEl.className = `message message-${type}`; const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); messageEl.innerHTML = `<div class="message-content">${text}</div><div class="message-time">${time}</div>`; elements.messagesContainer.appendChild(messageEl); elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight; }
+        function sendMessage(e) { e.preventDefault(); const text = elements.messageInput.value.trim(); if (text && appState.dataConnection) { const message = { type: 'message', text, timestamp: new Date().toISOString() }; appState.dataConnection.send(message); addMessage(text, 'sent', message.timestamp); elements.messageForm.reset(); } }
         function generateQRCode() { if (!appState.peerId) return; const qr = qrcode(0, 'L'); qr.addData(appState.peerId); qr.make(); elements.qrCodeContainer.innerHTML = qr.createImgTag(5, 10); }
-        function startCamera() {
-            if (!('mediaDevices' in navigator)) { showNotification("Camera API not supported."); return; }
-            appState.isCameraRunning = true;
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-                .then(stream => { elements.scannerVideo.srcObject = stream; elements.scannerVideo.onloadedmetadata = () => { elements.scannerVideo.play(); requestAnimationFrame(tick); }; })
-                .catch(err => { showNotification("Could not access camera."); appState.isCameraRunning = false; });
-        }
+        function startCamera() { if (!('mediaDevices' in navigator)) { showNotification("Camera API not supported."); return; } appState.isCameraRunning = true; navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(stream => { elements.scannerVideo.srcObject = stream; elements.scannerVideo.onloadedmetadata = () => { elements.scannerVideo.play(); requestAnimationFrame(tick); }; }).catch(err => { showNotification("Could not access camera. Please ensure you are on a secure (https) connection and have granted permission."); appState.isCameraRunning = false; }); }
         function stopCamera() { if (elements.scannerVideo.srcObject) { elements.scannerVideo.srcObject.getTracks().forEach(t => t.stop()); } appState.isCameraRunning = false; }
         function tick() {
             if (!appState.isCameraRunning) return;
@@ -357,15 +124,7 @@
             }
             requestAnimationFrame(tick);
         }
-        function showView(viewName) {
-            if (appState.currentView === viewName) return;
-            appState.previousView = appState.currentView;
-            appState.currentView = viewName;
-            Object.values(elements.views).forEach(v => v.classList.remove('active'));
-            elements.views[viewName].classList.add('active');
-            if (viewName === 'scanner') startCamera();
-            if (appState.previousView === 'scanner') stopCamera();
-        }
+        function showView(viewName) { if (appState.currentView === viewName) return; appState.previousView = appState.currentView; appState.currentView = viewName; Object.values(elements.views).forEach(v => v.classList.remove('active')); elements.views[viewName].classList.add('active'); if (viewName === 'scanner') startCamera(); if (appState.previousView === 'scanner') stopCamera(); }
         function setupEventListeners() {
             document.getElementById('create-link-card').addEventListener('click', () => showView('qr'));
             document.getElementById('scan-qr-card').addEventListener('click', () => showView('scanner'));
@@ -375,36 +134,16 @@
             document.getElementById('identity-back-btn').addEventListener('click', () => showView(appState.previousView));
             document.getElementById('identity-btn').addEventListener('click', () => showView('identity'));
             document.getElementById('save-identity-btn').addEventListener('click', saveIdentity);
+            elements.copyIdBtn.addEventListener('click', () => { navigator.clipboard.writeText(appState.peerId).then(() => showNotification('Peer ID copied to clipboard!'), () => showNotification('Failed to copy ID.')); });
             elements.messageForm.addEventListener('submit', sendMessage);
             elements.messageInput.addEventListener('input', () => { elements.sendButton.disabled = elements.messageInput.value.trim() === ''; });
             elements.themeToggle.addEventListener('click', () => { appState.theme = appState.theme === 'light' ? 'dark' : 'light'; updateUI(); });
-            elements.avatarUpload.addEventListener('change', e => {
-                const file = e.target.files[0];
-                if (file) { const reader = new FileReader(); reader.onload = ev => { appState.avatarImage = ev.target.result; updateUI(); }; reader.readAsDataURL(file); }
-            });
+            elements.avatarUpload.addEventListener('change', e => { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = ev => { appState.avatarImage = ev.target.result; updateUI(); }; reader.readAsDataURL(file); } });
         }
-        function showNotification(text, duration = 3000) {
-            const el = document.createElement('div');
-            el.className = 'notification';
-            el.textContent = text;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), duration);
-        }
-        function registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-                navigator.serviceWorker.register(swUrl)
-                    .then(reg => console.log('Service Worker registered successfully from Blob:', reg))
-                    .catch(err => console.error('Service Worker registration failed:', err));
-            }
-        }
-
-        // --- LET'S GO ---
+        function showNotification(text, duration = 3000) { const el = document.createElement('div'); el.className = 'notification'; el.textContent = text; document.body.appendChild(el); setTimeout(() => el.remove(), duration); }
+        function registerServiceWorker() { if ('serviceWorker' in navigator) { const blob = new Blob([swCode], { type: 'application/javascript' }); navigator.serviceWorker.register(URL.createObjectURL(blob)).then(reg => console.log('Service Worker registered successfully from Blob:', reg)).catch(err => console.error('Service Worker registration failed:', err)); } }
         initApp();
     });
     </script>
 </body>
 </html>
-           
-      
