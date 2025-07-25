@@ -6,12 +6,10 @@
     <meta name="description" content="P2P - Himachal (A Pahadi to Pahadi Messenger) - Decentralized, secure messaging app">
     <meta name="theme-color" content="#121212">
     <title>P2P- Himachal Messenger</title>
-
     <link rel="manifest" href="data:application/manifest+json,{\"name\":\"P2P - Himachal (A Pahadi to Pahadi Messenger)\",\"short_name\":\"P2P Chat\",\"description\":\"Decentralized peer-to-peer messaging\",\"start_url\":\".\",\"display\":\"standalone\",\"background_color\":\"#121212\",\"theme_color\":\"#121212\",\"icons\":[{\"src\":\"https://via.placeholder.com/192\",\"sizes\":\"192x192\",\"type\":\"image/png\"},{\"src\":\"https://via.placeholder.com/512\",\"sizes\":\"512x512\",\"type\":\"image/png\"}]}">
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.js"></script>
-
     <style>
         :root {
             --primary-color: #00bcd4;
@@ -35,7 +33,6 @@
             --primary: var(--primary-color);
             --primary-light: #4dd0e1;
         }
-
         [data-theme=light] {
             --text: var(--text-light);
             --bg: var(--bg-light);
@@ -45,7 +42,6 @@
             --header-bg: var(--primary-color);
             --header-text: var(--white);
         }
-
         [data-theme=dark] {
             --text: var(--text-dark);
             --bg: var(--bg-dark);
@@ -55,14 +51,12 @@
             --header-bg: #1a1a1a;
             --header-text: var(--primary-color);
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             transition: background-color .3s, color .3s, border-color .3s;
         }
-
         body {
             font-family: 'Roboto', 'Helvetica', sans-serif;
             background-color: var(--bg);
@@ -75,14 +69,12 @@
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
         }
-
         .app-container {
             display: flex;
             flex-direction: column;
             height: 100%;
             max-width: 100%;
         }
-
         header {
             background-color: var(--header-bg);
             color: var(--header-text);
@@ -96,7 +88,6 @@
             position: sticky;
             top: 0;
         }
-
         .logo {
             display: flex;
             align-items: center;
@@ -105,24 +96,20 @@
             font-size: 1.2rem;
             letter-spacing: -0.5px;
         }
-
         .logo-video {
             width: 40px;
             height: 40px;
             border-radius: 50%;
         }
-
         .header-actions {
             display: flex;
             gap: 0.5rem;
             align-items: center;
         }
-
         .dropdown {
             position: relative;
             display: inline-block;
         }
-
         .dropdown-toggle {
             background: transparent;
             border: none;
@@ -132,7 +119,6 @@
             padding: 0.5rem;
             border-radius: 50%;
         }
-
         .dropdown-menu {
             position: absolute;
             top: 100%;
@@ -145,11 +131,9 @@
             z-index: 100;
             display: none;
         }
-
         .dropdown-menu.show {
             display: block;
         }
-
         .dropdown-item {
             padding: 0.8rem 1rem;
             cursor: pointer;
@@ -159,12 +143,10 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .dropdown-item:hover {
             background-color: var(--primary);
             color: var(--white);
         }
-
         .btn-icon {
             background: transparent;
             border: none;
@@ -178,11 +160,9 @@
             align-items: center;
             justify-content: center;
         }
-
         .btn-icon:hover {
             background-color: rgba(255,255,255,.1);
         }
-
         .view {
             flex: 1;
             overflow-y: auto;
@@ -190,12 +170,10 @@
             padding: 1rem;
             width: 100%;
         }
-
         .view.active {
             display: flex;
             flex-direction: column;
         }
-
         .qr-container, .scanner-container, .identity-setup {
             display: flex;
             flex-direction: column;
@@ -207,13 +185,11 @@
             height: 100%;
             justify-content: center;
         }
-
         .qr-container h2, .scanner-container h2, .identity-setup h2 {
             margin-bottom: 1rem;
             font-size: clamp(1.5rem, 4vw, 1.8rem);
             text-align: center;
         }
-
         .qr-container p, .scanner-container p, .identity-setup p {
             margin-bottom: 1.5rem;
             text-align: center;
@@ -221,7 +197,6 @@
             opacity: 0.9;
             font-size: clamp(0.9rem, 2.5vw, 1rem);
         }
-
         #qr-code-container {
             margin: 1.5rem 0;
             padding: 1.2rem;
@@ -235,7 +210,6 @@
             max-width: 300px;
             width: 100%;
         }
-
         .peer-id-display {
             background-color: var(--card);
             padding: 1rem;
@@ -251,7 +225,6 @@
             width: 100%;
             max-width: 500px;
         }
-
         .connection-status {
             margin-top: 1.2rem;
             padding: 0.6rem 1.2rem;
@@ -264,25 +237,21 @@
             border: 1px solid var(--border);
             font-size: clamp(0.9rem, 2.5vw, 1rem);
         }
-
         .status-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
             display: inline-block;
         }
-
         .status-online .status-dot { background-color: var(--online); }
         .status-connecting .status-dot { background-color: var(--warning); animation: pulse 1.5s infinite; }
         .status-offline .status-dot { background-color: var(--offline); }
-
         .chat-container {
             display: flex;
             flex-direction: column;
             height: 100%;
             background-color: var(--bg);
         }
-
         .chat-header {
             display: flex;
             align-items: center;
@@ -293,7 +262,6 @@
             top: 0;
             z-index: 5;
         }
-
         .avatar {
             width: 36px;
             height: 36px;
@@ -309,12 +277,10 @@
             background-size: cover;
             background-position: center;
         }
-
         .peer-info {
             flex: 1;
             min-width: 0;
         }
-
         .peer-name {
             font-weight: 700;
             font-size: clamp(0.9rem, 3vw, 1rem);
@@ -322,16 +288,13 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .peer-status {
             font-size: clamp(0.75rem, 2.5vw, 0.8rem);
             opacity: 0.7;
         }
-
         .peer-status.status-online {
             color: var(--online);
         }
-
         .messages {
             flex: 1;
             overflow-y: auto;
@@ -341,7 +304,6 @@
             gap: 0.8rem;
             -webkit-overflow-scrolling: touch;
         }
-
         .message {
             max-width: 80%;
             padding: 0.8rem 1rem;
@@ -349,34 +311,29 @@
             position: relative;
             animation: fadeIn 0.3s;
         }
-
         .message-sent {
             align-self: flex-end;
             background-color: var(--primary);
             color: #fff;
             border-bottom-right-radius: 4px;
         }
-
         .message-received {
             align-self: flex-start;
             background-color: var(--card);
             border: 1px solid var(--border);
             border-bottom-left-radius: 4px;
         }
-
         .message-content {
             word-wrap: break-word;
             font-size: clamp(0.85rem, 2.5vw, 0.95rem);
             line-height: 1.4;
         }
-
         .message-time {
             font-size: 0.7rem;
             text-align: right;
             margin-top: 0.3rem;
             opacity: 0.7;
         }
-
         .message-input-area {
             display: flex;
             padding: 0.8rem;
@@ -385,7 +342,6 @@
             position: sticky;
             bottom: 0;
         }
-
         .message-input {
             flex: 1;
             padding: 0.8rem 1rem;
@@ -396,12 +352,10 @@
             outline: 0;
             font-size: 0.9rem;
         }
-
         .message-input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(0,188,212,.1);
         }
-
         .send-button {
             margin-left: 0.5rem;
             background-color: var(--primary);
@@ -417,16 +371,13 @@
             transition: background-color 0.2s;
             flex-shrink: 0;
         }
-
         .send-button:hover:not(:disabled) {
             background-color: var(--primary-light);
         }
-
         .send-button:disabled {
             background-color: var(--border);
             cursor: not-allowed;
         }
-
         .scanner-viewport {
             width: 100%;
             max-width: min(350px, 85vw);
@@ -438,13 +389,11 @@
             margin: 1rem 0;
             box-shadow: 0 2px 10px rgba(0,0,0,.1);
         }
-
         #scanner-video {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
         .scanner-overlay {
             position: absolute;
             top: 0;
@@ -455,7 +404,6 @@
             align-items: center;
             justify-content: center;
         }
-
         .scanner-frame {
             width: 70%;
             height: 70%;
@@ -463,19 +411,16 @@
             border-radius: 8px;
             box-shadow: 0 0 0 9999px rgba(0,0,0,.5);
         }
-
         .form-group {
             margin-bottom: 1.5rem;
             width: 100%;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
             font-size: clamp(0.9rem, 2.5vw, 1rem);
         }
-
         .form-control {
             width: 100%;
             padding: 0.8rem;
@@ -485,13 +430,11 @@
             color: var(--text);
             font-size: 0.9rem;
         }
-
         .form-control:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(0,188,212,.1);
             outline: 0;
         }
-
         .btn {
             padding: 0.8rem 1.5rem;
             border-radius: 4px;
@@ -505,27 +448,22 @@
             transition: all 0.2s;
             font-size: 0.9rem;
         }
-
         .btn-primary {
             background-color: var(--primary);
             color: #fff;
         }
-
         .btn-primary:hover {
             background-color: var(--primary-light);
         }
-
         .btn-secondary {
             background-color: transparent;
             border: 1px solid var(--border);
         }
-
         .btn-secondary:hover {
             background-color: var(--card);
             border-color: var(--primary);
             color: var(--primary);
         }
-
         .notification {
             position: fixed;
             bottom: 1rem;
@@ -545,7 +483,6 @@
             max-width: 90%;
             font-size: clamp(0.85rem, 2.5vw, 0.95rem);
         }
-
         .avatar-preview {
             width: 80px;
             height: 80px;
@@ -556,11 +493,9 @@
             margin: 0 auto 1rem;
             border: 2px solid var(--border);
         }
-
         .hidden {
             display: none;
         }
-
         footer {
             text-align: center;
             padding: 0.8rem;
@@ -569,95 +504,75 @@
             font-size: clamp(0.75rem, 2.5vw, 0.85rem);
             border-top: 1px solid var(--border);
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes slideUp {
             from { opacity: 0; transform: translate(-50%, 20px); }
             to { opacity: 1; transform: translate(-50%, 0); }
         }
-
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.3; }
             100% { opacity: 1; }
         }
-
         @media (max-width: 768px) {
             header {
                 padding: 0.6rem 0.8rem;
             }
-
             .logo-video {
                 width: 32px;
                 height: 32px;
             }
-
             .logo {
                 font-size: 1rem;
             }
-
             .view {
                 padding: 0.8rem;
             }
-
             .qr-container, .scanner-container, .identity-setup {
                 padding: 1rem;
             }
-
             #qr-code-container {
                 max-width: 250px;
             }
-
             .scanner-viewport {
                 max-width: min(300px, 90vw);
             }
-
             .chat-header {
                 padding: 0.6rem 0.8rem;
             }
-
             .message-input-area {
                 padding: 0.6rem;
             }
-
             .message-input {
                 padding: 0.6rem 0.8rem;
             }
-
             .send-button {
                 width: 36px;
                 height: 36px;
             }
-
             .btn {
                 padding: 0.7rem 1.2rem;
                 font-size: 0.85rem;
             }
         }
-
         @media (max-width: 480px) {
             .logo span {
                 display: none;
             }
-
             .header-actions {
                 gap: 0.3rem;
             }
-
             .btn-icon {
                 width: 32px;
                 height: 32px;
                 font-size: 1rem;
             }
-
             .dropdown-menu {
                 min-width: 140px;
             }
-
             .dropdown-item {
                 padding: 0.6rem 0.8rem;
                 font-size: 0.85rem;
@@ -685,7 +600,6 @@
                 </div>
             </div>
         </header>
-
         <main style="flex: 1; overflow-y: hidden; display: flex;">
             <div id="onboarding-view" class="view active">
                 <div class="onboarding">
@@ -765,12 +679,10 @@
                 </div>
             </div>
         </main>
-
         <footer>
             P2P - Himachal Messenger &copy; 2025, Created by Samar Jeet Jamwal
         </footer>
     </div>
-
     <script>
     const swCode = `
         const CACHE_NAME = 'p2p-messenger-cache-v2';
@@ -793,7 +705,6 @@
             e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
         });
     `;
-
     document.addEventListener('DOMContentLoaded', () => {
         const db = {
             _db: null,
@@ -841,7 +752,6 @@
                 });
             }
         };
-
         const appState = {
             peer: null,
             peerId: null,
@@ -853,9 +763,9 @@
             previousView: 'onboarding',
             isCameraRunning: false,
             retryCount: 0,
-            maxRetries: 3
+            maxRetries: 3,
+            isReconnecting: false // Flag to prevent multiple reconnect attempts
         };
-
         const elements = {
             views: {
                 onboarding: document.getElementById('onboarding-view'),
@@ -940,6 +850,13 @@
         }
 
         function initPeerJS() {
+            // Prevent multiple init calls during reconnection attempts
+            if (appState.isReconnecting) {
+                 console.log("Reconnection already in progress.");
+                 return;
+            }
+            appState.isReconnecting = true;
+
             const peerJsConfig = {
                 config: {
                     'iceServers': [
@@ -958,6 +875,12 @@
                     ]
                 }
             };
+            // Close any existing peer before creating a new one
+            if (appState.peer) {
+                appState.peer.destroy();
+                appState.peer = null;
+            }
+
             appState.peer = new Peer(peerJsConfig);
             appState.peer.on('open', id => {
                 appState.peerId = id;
@@ -965,59 +888,104 @@
                 elements.identityPeerId.textContent = id;
                 setConnectionStatus('online');
                 generateQRCode();
+                appState.retryCount = 0; // Reset retry count on successful open
+                appState.isReconnecting = false; // Clear reconnect flag
             });
             appState.peer.on('connection', conn => setupDataConnection(conn));
             appState.peer.on('error', err => {
                 console.error('PeerJS error:', err);
+                // Only show error notification if not reconnecting automatically
+                if (!appState.isReconnecting || appState.retryCount >= appState.maxRetries) {
+                    showNotification(`PeerJS Error: ${err.type}`);
+                }
                 setConnectionStatus('error', `Error: ${err.type}`);
-                if (appState.retryCount < appState.maxRetries) {
-                    appState.retryCount++;
-                    showNotification(`Connection failed. Retrying (${appState.retryCount}/${appState.maxRetries})...`);
-                    setTimeout(initPeerJS, 3000);
+
+                // Handle specific error types for reconnection
+                if (err.type === 'peer-unavailable' || err.type === 'network') {
+                     // These errors might be temporary, allow retries
                 } else {
-                    showNotification('Max retries reached. Please check your connection.');
+                    // Other errors might indicate a persistent problem
+                    appState.isReconnecting = false; // Stop auto-retrying for persistent errors
+                }
+
+                if (appState.isReconnecting && appState.retryCount < appState.maxRetries) {
+                    appState.retryCount++;
+                    console.log(`PeerJS error, retrying (${appState.retryCount}/${appState.maxRetries})...`);
+                    setTimeout(() => {
+                        // Ensure flag is still set before retrying
+                         if (appState.isReconnecting) {
+                            initPeerJS();
+                         }
+                    }, 3000);
+                } else if (appState.isReconnecting) {
+                   console.log('Max PeerJS retries reached or reconnection stopped.');
+                   appState.isReconnecting = false; // Ensure flag is cleared
+                   // Optionally, show a final failure message if needed
                 }
             });
             appState.peer.on('disconnected', () => {
+                console.log("PeerJS disconnected.");
                 setConnectionStatus('offline');
+                // Use PeerJS's built-in reconnect for 'disconnected' event
                 if (appState.retryCount < appState.maxRetries) {
                     appState.retryCount++;
+                    console.log(`PeerJS disconnected, reconnecting (${appState.retryCount}/${appState.maxRetries})...`);
                     showNotification(`Disconnected. Reconnecting (${appState.retryCount}/${appState.maxRetries})...`);
-                    appState.peer.reconnect();
+                    // Use the built-in reconnect method
+                    setTimeout(() => {
+                        if (appState.peer && !appState.peer.destroyed) {
+                             appState.peer.reconnect();
+                        } else {
+                            // If peer is destroyed, re-init
+                            initPeerJS();
+                        }
+                    }, 1000); // Small delay before reconnect
+                } else {
+                    console.log('Max PeerJS reconnection attempts reached.');
+                    showNotification('Max reconnection attempts reached. Please refresh.');
+                    appState.isReconnecting = false; // Stop trying
                 }
             });
         }
 
+
         function setupDataConnection(conn) {
             if (appState.dataConnection) {
                 conn.close();
+                showNotification('Another connection attempt was rejected.');
                 return;
             }
             appState.dataConnection = conn;
             elements.messagesContainer.innerHTML = '';
             setConnectionStatus('connecting', `Handshake with ${conn.peer}...`);
             conn.on('open', () => {
-                conn.send({ type: 'identity', nickname: appState.nickname, avatarImage: appState.avatarImage });
+                // Do NOT send identity immediately. Wait for remote identity or handshake.
+                // conn.send({ type: 'identity', nickname: appState.nickname, avatarImage: appState.avatarImage });
                 setConnectionStatus('connected');
                 showView('chat');
-                appState.retryCount = 0;
+                appState.retryCount = 0; // Reset retry count on successful connection
             });
             conn.on('data', data => {
                 if (data.type === 'identity') {
                     updatePeerInfo(data);
+                    // Send our identity only after receiving theirs (better handshake)
+                    if (appState.dataConnection && appState.dataConnection.open) {
+                         appState.dataConnection.send({ type: 'identity', nickname: appState.nickname, avatarImage: appState.avatarImage });
+                    }
                 } else if (data.type === 'message') {
                     addMessage(data.text, 'received', data.timestamp);
                     saveMessage(data.text, 'received', data.timestamp);
                 }
             });
             conn.on('close', () => {
-                showNotification(`${conn.metadata?.nickname || 'Peer'} has disconnected.`);
-                setConnectionStatus('online');
+                const peerNickname = conn.metadata?.nickname || conn.peer || 'Peer';
+                showNotification(`${peerNickname} has disconnected.`);
+                setConnectionStatus('online'); // Go back to online state, ready for new connections
                 showView('onboarding');
                 appState.dataConnection = null;
             });
             conn.on('error', err => {
-                console.error('Connection error:', err);
+                console.error('Data Connection error:', err);
                 showNotification('Connection lost.', 'error');
                 setConnectionStatus('error');
                 showView('onboarding');
@@ -1030,13 +998,15 @@
                 showNotification('Invalid Peer ID.');
                 return;
             }
-            if (appState.dataConnection) {
-                showNotification('Already connected to a peer.');
-                return;
+            // Prevent connecting if already connected
+            if (appState.dataConnection && appState.dataConnection.open) {
+                 showNotification('Already connected to a peer.');
+                 return;
             }
             showNotification(`Connecting to ${peerId}...`);
             setConnectionStatus('connecting');
-            setupDataConnection(appState.peer.connect(peerId, { reliable: true, metadata: { nickname: appState.nickname } }));
+            const newConn = appState.peer.connect(peerId, { reliable: true, metadata: { nickname: appState.nickname } });
+            setupDataConnection(newConn); // Setup the new connection
         }
 
         function updatePeerInfo(peerIdentity) {
@@ -1049,6 +1019,9 @@
                 elements.peerAvatar.style.backgroundColor = '#0097a7';
                 elements.peerAvatar.textContent = peerIdentity.nickname.charAt(0).toUpperCase();
             }
+             // Update peer status display
+            elements.peerStatus.textContent = 'Online';
+            elements.peerStatus.className = 'peer-status status-online';
         }
 
         function setConnectionStatus(status, text) {
@@ -1075,20 +1048,44 @@
             const messageEl = document.createElement('div');
             messageEl.className = `message message-${type}`;
             const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            messageEl.innerHTML = `<div class="message-content">${text}</div><div class="message-time">${time}</div>`;
+
+            // Create content element and use textContent for safety
+            const contentEl = document.createElement('div');
+            contentEl.className = 'message-content';
+            contentEl.textContent = text; // Use textContent to avoid HTML injection
+
+            const timeEl = document.createElement('div');
+            timeEl.className = 'message-time';
+            timeEl.textContent = time;
+
+            messageEl.appendChild(contentEl);
+            messageEl.appendChild(timeEl);
+
             elements.messagesContainer.appendChild(messageEl);
             elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
         }
 
         function sendMessage() {
             const text = elements.messageInput.value.trim();
-            if (text && appState.dataConnection) {
+            if (text && appState.dataConnection && appState.dataConnection.open) { // Check connection state
                 const message = { type: 'message', text, timestamp: new Date().toISOString() };
-                appState.dataConnection.send(message);
-                addMessage(text, 'sent', message.timestamp);
-                saveMessage(text, 'sent', message.timestamp);
-                elements.messageInput.value = '';
-                elements.sendButton.disabled = true;
+                try {
+                    appState.dataConnection.send(message);
+                    addMessage(text, 'sent', message.timestamp);
+                    saveMessage(text, 'sent', message.timestamp);
+                    elements.messageInput.value = '';
+                    elements.sendButton.disabled = true;
+                } catch (e) {
+                    console.error("Failed to send message:", e);
+                    showNotification("Failed to send message. Connection might be lost.");
+                    // Optionally, trigger disconnection logic here
+                     if (appState.dataConnection) {
+                         appState.dataConnection.close(); // This will trigger the 'close' event
+                     }
+                }
+            } else if (!appState.dataConnection || !appState.dataConnection.open) {
+                 showNotification("Not connected. Cannot send message.");
+                 elements.sendButton.disabled = true;
             }
         }
 
@@ -1105,6 +1102,10 @@
                 showNotification('Camera API not supported.');
                 return;
             }
+            if (appState.isCameraRunning) {
+                console.warn("Camera is already running.");
+                return; // Prevent multiple starts
+            }
             appState.isCameraRunning = true;
             navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(stream => {
                 elements.scannerVideo.srcObject = stream;
@@ -1113,35 +1114,56 @@
                     requestAnimationFrame(tick);
                 };
             }).catch(err => {
-                showNotification('Could not access camera. Please ensure you are on a secure (https) connection and have granted permission.');
-                appState.isCameraRunning = false;
+                console.error("Camera access error:", err);
+                appState.isCameraRunning = false; // Reset flag on error
+                let errorMsg = 'Could not access camera.';
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    errorMsg += ' Please grant camera permission.';
+                } else if (err.name === 'NotFoundError' || err.name === 'OverconstrainedError') {
+                     errorMsg += ' No suitable camera found.';
+                } else if (err.name === 'NotReadableError') {
+                     errorMsg += ' Camera is already in use.';
+                } else if (err.name === 'AbortError') {
+                     errorMsg += ' Camera access was aborted.';
+                }
+                showNotification(errorMsg);
             });
         }
 
         function stopCamera() {
             if (elements.scannerVideo.srcObject) {
-                elements.scannerVideo.srcObject.getTracks().forEach(t => t.stop());
+                const tracks = elements.scannerVideo.srcObject.getTracks();
+                tracks.forEach(track => {
+                    if (track.readyState === 'live') {
+                        track.stop();
+                    }
+                });
+                elements.scannerVideo.srcObject = null; // Clear reference
             }
             appState.isCameraRunning = false;
         }
 
         function tick() {
-            if (!appState.isCameraRunning) return;
-            if (elements.scannerVideo.readyState === elements.scannerVideo.HAVE_ENOUGH_DATA) {
-                const canvas = document.createElement('canvas');
-                canvas.width = elements.scannerVideo.videoWidth;
-                canvas.height = elements.scannerVideo.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(elements.scannerVideo, 0, 0, canvas.width, canvas.height);
-                const code = jsQR(ctx.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height);
-                if (code) {
-                    stopCamera();
-                    showNotification('QR Code Detected!');
-                    connectToPeer(code.data);
-                    return;
-                }
-            }
-            requestAnimationFrame(tick);
+           if (!appState.isCameraRunning) return;
+           if (elements.scannerVideo.readyState === elements.scannerVideo.HAVE_ENOUGH_DATA) {
+               const canvas = document.createElement('canvas');
+               canvas.width = elements.scannerVideo.videoWidth;
+               canvas.height = elements.scannerVideo.videoHeight;
+               const ctx = canvas.getContext('2d');
+               ctx.drawImage(elements.scannerVideo, 0, 0, canvas.width, canvas.height);
+               const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+               const code = jsQR(imageData.data, canvas.width, canvas.height);
+               if (code) {
+                   stopCamera();
+                   showNotification('QR Code Detected!');
+                   connectToPeer(code.data);
+                   return; // Exit loop after successful detection
+               }
+           }
+           // Continue scanning only if camera is still running
+           if (appState.isCameraRunning) {
+                requestAnimationFrame(tick);
+           }
         }
 
         function showView(viewName) {
@@ -1169,15 +1191,20 @@
             document.getElementById('save-identity-btn').addEventListener('click', saveIdentity);
             document.getElementById('chat-back-btn').addEventListener('click', () => {
                 if (appState.dataConnection) {
-                    appState.dataConnection.close();
+                    appState.dataConnection.close(); // This triggers the 'close' event handler
                 }
-                showView('onboarding');
+                // The 'close' event handler will call showView('onboarding')
+                // showView('onboarding'); // Removed, handled by close event
             });
             elements.copyIdBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(appState.peerId).then(
-                    () => showNotification('Peer ID copied to clipboard!'),
-                    () => showNotification('Failed to copy ID.')
-                );
+                if (appState.peerId) { // Check if peerId exists
+                    navigator.clipboard.writeText(appState.peerId).then(
+                        () => showNotification('Peer ID copied to clipboard!'),
+                        () => showNotification('Failed to copy ID.')
+                    );
+                } else {
+                     showNotification('Peer ID not available yet.');
+                }
             });
             elements.messageInput.addEventListener('keypress', e => {
                 if (e.key === 'Enter') {
@@ -1186,7 +1213,8 @@
                 }
             });
             elements.messageInput.addEventListener('input', () => {
-                elements.sendButton.disabled = elements.messageInput.value.trim() === '';
+                // Enable send button only if there's text AND a connection
+                elements.sendButton.disabled = elements.messageInput.value.trim() === '' || !appState.dataConnection || !appState.dataConnection.open;
             });
             elements.sendButton.addEventListener('click', sendMessage);
             elements.themeToggle.addEventListener('click', () => {
@@ -1198,12 +1226,17 @@
                 if (file) {
                     if (file.size > 2 * 1024 * 1024) {
                         showNotification('Image size must be less than 2MB.');
+                        e.target.value = ''; // Clear the input
                         return;
                     }
                     const reader = new FileReader();
                     reader.onload = ev => {
                         appState.avatarImage = ev.target.result;
                         updateUI();
+                    };
+                    reader.onerror = (err) => {
+                        console.error("Error reading file:", err);
+                        showNotification("Failed to read image file.");
                     };
                     reader.readAsDataURL(file);
                 }
@@ -1219,11 +1252,22 @@
         }
 
         function showNotification(text, duration = 3000) {
+            // Prevent duplicate notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            for (let notif of existingNotifications) {
+                if (notif.textContent === text) {
+                    // Reset timeout if exists, or just ignore
+                    clearTimeout(notif.timeoutId);
+                    notif.timeoutId = setTimeout(() => notif.remove(), duration);
+                    return;
+                }
+            }
+
             const el = document.createElement('div');
             el.className = 'notification';
             el.textContent = text;
             document.body.appendChild(el);
-            setTimeout(() => el.remove(), duration);
+            el.timeoutId = setTimeout(() => el.remove(), duration); // Store timeout ID
         }
 
         function registerServiceWorker() {
